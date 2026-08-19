@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/apps/">
+    <Project Path="apps/api/Smartboxx.Api/Smartboxx.Api.csproj" />
+  </Folder>
+  <Folder Name="/platform/">
+    <Project Path="platform/Smartboxx.Platform.Contracts/Smartboxx.Platform.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/modules/">
+    <Project Path="modules/documents/Smartboxx.Modules.Documents.csproj" />
+    <Project Path="modules/contact-centre/Smartboxx.Modules.ContactCentre.csproj" />
+    <Project Path="modules/software-delivery/Smartboxx.Modules.SoftwareDelivery.csproj" />
+    <Project Path="modules/testing/Smartboxx.Modules.Testing.csproj" />
+    <Project Path="modules/api-intelligence/Smartboxx.Modules.ApiIntelligence.csproj" />
+    <Project Path="modules/value/Smartboxx.Modules.Value.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Smartboxx.Api.Tests/Smartboxx.Api.Tests.csproj" />
+  </Folder>
+</Solution>

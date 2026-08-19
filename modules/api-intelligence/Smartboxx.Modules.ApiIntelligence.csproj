@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../../platform/Smartboxx.Platform.Contracts/Smartboxx.Platform.Contracts.csproj" />
+  </ItemGroup>
+</Project>
