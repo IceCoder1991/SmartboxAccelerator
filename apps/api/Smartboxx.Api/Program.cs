@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Smartboxx.Api;
 using Smartboxx.Platform.Contracts;
+using Smartboxx.Modules.Documents.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,17 +20,31 @@ builder.Services.AddScoped<IIdentityProvider, HttpIdentityProvider>();
 builder.Services.AddScoped<IAuthorisationService, AuthorisationService>();
 builder.Services.AddScoped<IFeatureService, FeatureService>();
 builder.Services.AddScoped<IAuthorizationHandler, PermissionHandler>();
+builder.Services.AddSingleton<IDocumentTypeRepository, InMemoryDocumentTypeRepository>();
+builder.Services.AddScoped<DocumentTypeRegistry>();
+builder.Services.AddScoped<IAuditService, AuditLogger>();
 builder.Services.AddAuthentication("Smartboxx")
     .AddScheme<AuthenticationSchemeOptions, LocalDevelopmentAuthenticationHandler>("Smartboxx", _ => { });
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("documents.view", policy => policy.AddRequirements(new PermissionRequirement("documents.view")))
+    .AddPolicy("documents.configure", policy => policy.AddRequirements(new PermissionRequirement("documents.configure")))
     .AddPolicy("platform.admin", policy => policy.AddRequirements(new PermissionRequirement("platform.admin")));
 
 var app = builder.Build();
 app.UseExceptionHandler(exception => exception.Run(async context =>
 {
-    context.Response.StatusCode = 500;
-    await context.Response.WriteAsJsonAsync(new { code = "unexpected_error", traceId = context.TraceIdentifier });
+    var error = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
+    context.Response.StatusCode = error switch
+    {
+        RegistryValidationException => StatusCodes.Status400BadRequest,
+        RegistryConflictException => StatusCodes.Status409Conflict,
+        KeyNotFoundException => StatusCodes.Status404NotFound,
+        _ => StatusCodes.Status500InternalServerError
+    };
+    if (error is RegistryValidationException validation)
+        await context.Response.WriteAsJsonAsync(new { code = "validation_failed", errors = validation.Errors, traceId = context.TraceIdentifier });
+    else
+        await context.Response.WriteAsJsonAsync(new { code = error is RegistryConflictException ? "registry_conflict" : error is KeyNotFoundException ? "not_found" : "unexpected_error", traceId = context.TraceIdentifier });
 }));
 app.Use(async (context, next) =>
 {
@@ -63,6 +78,7 @@ app.MapGet("/api/platform/bootstrap", (TenantAccessor tenant, ICurrentUser user,
     });
 }).RequireAuthorization();
 
+app.MapDocumentRegistry();
 app.MapGet("/api/documents", () => Results.Ok(new { items = Array.Empty<object>() }))
     .RequireAuthorization("documents.view");
 app.MapGet("/api/platform/admin", () => Results.Ok(new { status = "authorised" }))
