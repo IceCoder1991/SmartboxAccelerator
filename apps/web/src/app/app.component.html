@@ -1,5 +1,7 @@
-<main>
-  <p class="eyebrow">SMARTBOXX</p>
-  <h1>{{ title }}</h1>
-  <p>The reusable client platform foundation is ready.</p>
-</main>
+@if (bootstrap(); as data) {
+  <header><img [src]="data.logo" [alt]="data.clientName + ' logo'"/><div><span>{{ data.clientName }}</span><strong>{{ data.productName }}</strong></div><button type="button" aria-label="User menu">{{ data.currentUser.displayName }}</button></header>
+  <div class="layout"><nav aria-label="Primary navigation"><ul>@for (item of data.navigation; track item.route) {<li><a [href]="item.route">{{ item.label }}</a></li>}</ul></nav>
+  <main><p class="eyebrow">SMARTBOXX</p><h1>Welcome to {{ data.productName }}</h1><p>Your enabled workspace is ready.</p></main></div>
+} @else if (error()) {
+  <main role="alert"><h1>We couldn't load your workspace</h1><p>Check your sign-in or contact support, then try again.</p></main>
+} @else { <main aria-busy="true"><p>Loading your workspace…</p></main> }
