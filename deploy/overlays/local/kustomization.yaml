@@ -1,0 +1,6 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: [../../base]
+namespace: smartboxx-local
+labels:
+  - pairs: { smartboxx.io/environment: local, smartboxx.io/platform-version: 0.1.0 }

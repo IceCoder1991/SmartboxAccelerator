@@ -1,0 +1,15 @@
+{
+  "ai": {
+    "allowedProviders": ["azure-openai", "anthropic"],
+    "liteLLM": { "modelListConfig": "litellm/models.yaml", "settingsFromEnvironment": true }
+  },
+  "capabilities": { "documents": true, "human-review": true, "value-dashboard": true },
+  "client": { "id": "golden-client", "industry": "insurance", "name": "Golden Client" },
+  "cloud": "azure",
+  "environments": ["local", "demo"],
+  "identity": { "provider": "entra-id", "settingsFromEnvironment": true },
+  "platformVersion": "0.1.0",
+  "schemaVersion": 1,
+  "storage": { "provider": "azure-blob", "settingsFromEnvironment": true },
+  "vectorStore": { "provider": "postgresql", "settingsFromEnvironment": true }
+}

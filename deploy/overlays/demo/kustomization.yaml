@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: [../../base]
+namespace: smartboxx-demo
+labels:
+  - pairs: { smartboxx.io/environment: demo, smartboxx.io/platform-version: 0.1.0 }
+patches:
+  - target: { kind: Deployment }
+    patch: |-
+      - op: add
+        path: /spec/template/metadata/labels/smartboxx.io~1synthetic
+        value: "true"

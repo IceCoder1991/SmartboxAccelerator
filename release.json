@@ -1,0 +1,6 @@
+{
+  "version": "0.1.0",
+  "releasedAt": "2026-08-19",
+  "configSchemaVersions": [1],
+  "database": { "minimumCompatibleVersion": "0.1.0", "migrationPolicy": "expand-migrate-contract" }
+}

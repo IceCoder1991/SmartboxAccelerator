@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: default-deny }
+spec: { podSelector: {}, policyTypes: [Ingress, Egress] }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: application-traffic }
+spec:
+  podSelector:
+    {
+      matchExpressions:
+        [
+          {
+            key: app,
+            operator: In,
+            values: [smartboxx-api, smartboxx-web, smartboxx-worker, litellm],
+          },
+        ],
+    }
+  policyTypes: [Ingress, Egress]
+  ingress: [{ from: [{ namespaceSelector: {} }] }]
+  egress:
+    [
+      { to: [{ namespaceSelector: {} }] },
+      { ports: [{ protocol: UDP, port: 53 }, { protocol: TCP, port: 443 }] },
+    ]
