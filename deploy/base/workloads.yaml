@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: smartboxx-api }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: smartboxx-api } }
+  template:
+    metadata: { labels: { app: smartboxx-api } }
+    spec:
+      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: api
+          image: ghcr.io/smartboxx/api:0.1.0
+          securityContext:
+            {
+              allowPrivilegeEscalation: false,
+              readOnlyRootFilesystem: true,
+              capabilities: { drop: [ALL] },
+            }
+          ports: [{ containerPort: 8080 }]
+          envFrom:
+            [
+              { configMapRef: { name: smartboxx-client } },
+              { secretRef: { name: smartboxx-runtime } },
+            ]
+          readinessProbe: { httpGet: { path: /health/ready, port: 8080 }, initialDelaySeconds: 5 }
+          livenessProbe: { httpGet: { path: /health/live, port: 8080 }, initialDelaySeconds: 15 }
+          resources: { requests: { cpu: 100m, memory: 256Mi }, limits: { cpu: '1', memory: 1Gi } }
+          volumeMounts: [{ name: tmp, mountPath: /tmp }]
+      volumes: [{ name: tmp, emptyDir: {} }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: smartboxx-web }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: smartboxx-web } }
+  template:
+    metadata: { labels: { app: smartboxx-web } }
+    spec:
+      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: web
+          image: ghcr.io/smartboxx/web:0.1.0
+          securityContext:
+            {
+              allowPrivilegeEscalation: false,
+              readOnlyRootFilesystem: true,
+              capabilities: { drop: [ALL] },
+            }
+          ports: [{ containerPort: 8080 }]
+          readinessProbe: { httpGet: { path: /, port: 8080 } }
+          livenessProbe: { httpGet: { path: /, port: 8080 } }
+          resources: { requests: { cpu: 50m, memory: 64Mi }, limits: { cpu: 500m, memory: 256Mi } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: smartboxx-worker }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: smartboxx-worker } }
+  template:
+    metadata: { labels: { app: smartboxx-worker } }
+    spec:
+      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: worker
+          image: ghcr.io/smartboxx/worker:0.1.0
+          securityContext:
+            {
+              allowPrivilegeEscalation: false,
+              readOnlyRootFilesystem: true,
+              capabilities: { drop: [ALL] },
+            }
+          envFrom:
+            [
+              { configMapRef: { name: smartboxx-client } },
+              { secretRef: { name: smartboxx-runtime } },
+            ]
+          resources: { requests: { cpu: 100m, memory: 256Mi }, limits: { cpu: '1', memory: 1Gi } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: litellm }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: litellm } }
+  template:
+    metadata: { labels: { app: litellm } }
+    spec:
+      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: litellm
+          image: ghcr.io/berriai/litellm:main-v1.75.8-stable
+          securityContext:
+            {
+              allowPrivilegeEscalation: false,
+              readOnlyRootFilesystem: true,
+              capabilities: { drop: [ALL] },
+            }
+          ports: [{ containerPort: 4000 }]
+          envFrom: [{ secretRef: { name: smartboxx-runtime } }]
+          readinessProbe: { httpGet: { path: /health/readiness, port: 4000 } }
+          livenessProbe: { httpGet: { path: /health/liveliness, port: 4000 } }
+          resources: { requests: { cpu: 100m, memory: 256Mi }, limits: { cpu: '1', memory: 1Gi } }
+---
+apiVersion: batch/v1
+kind: Job
+metadata: { name: smartboxx-migrate }
+spec:
+  backoffLimit: 3
+  template:
+    metadata: { labels: { app: smartboxx-migrate } }
+    spec:
+      restartPolicy: Never
+      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: migrate
+          image: ghcr.io/smartboxx/api:0.1.0
+          args: ['migrate', '--no-destructive']
+          securityContext:
+            {
+              allowPrivilegeEscalation: false,
+              readOnlyRootFilesystem: true,
+              capabilities: { drop: [ALL] },
+            }
+          envFrom:
+            [
+              { configMapRef: { name: smartboxx-client } },
+              { secretRef: { name: smartboxx-runtime } },
+            ]
+          resources: { requests: { cpu: 100m, memory: 256Mi }, limits: { cpu: '1', memory: 1Gi } }

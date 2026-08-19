@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata: { name: smartboxx-api }
+spec: { selector: { app: smartboxx-api }, ports: [{ port: 80, targetPort: 8080 }] }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: smartboxx-web }
+spec: { selector: { app: smartboxx-web }, ports: [{ port: 80, targetPort: 8080 }] }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: litellm }
+spec: { selector: { app: litellm }, ports: [{ port: 4000, targetPort: 4000 }] }
