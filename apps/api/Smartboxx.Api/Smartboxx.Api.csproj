@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="../../../platform/Smartboxx.Platform.Contracts/Smartboxx.Platform.Contracts.csproj" />
+    <ProjectReference Include="../../../modules/documents/Smartboxx.Modules.Documents.csproj" />
+    <ProjectReference Include="../../../modules/contact-centre/Smartboxx.Modules.ContactCentre.csproj" />
+    <ProjectReference Include="../../../modules/software-delivery/Smartboxx.Modules.SoftwareDelivery.csproj" />
+    <ProjectReference Include="../../../modules/testing/Smartboxx.Modules.Testing.csproj" />
+    <ProjectReference Include="../../../modules/api-intelligence/Smartboxx.Modules.ApiIntelligence.csproj" />
+    <ProjectReference Include="../../../modules/value/Smartboxx.Modules.Value.csproj" />
+  </ItemGroup>
+</Project>

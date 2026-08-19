@@ -1,0 +1,20 @@
+{
+  "name": "smartboxx-accelerator",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "build:web": "npm run build --workspace @smartboxx/web",
+    "test:web": "npm run test --workspace @smartboxx/web",
+    "format:check": "prettier --check .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
+  },
+  "engines": {
+    "node": ">=20.19.0",
+    "npm": ">=10.0.0"
+  }
+}
