@@ -7,7 +7,8 @@ public static class SmartboxxPermissions
     public static readonly string[] All =
     [
         "documents.view", "documents.upload", "documents.configure", "documents.review", "documents.admin",
-        "contactCentre.view", "contactCentre.review", "testing.execute", "apiGovernance.admin", "value.view",
+        "contactCentre.view", "contactCentre.ingest", "contactCentre.review", "softwareDelivery.view", "softwareDelivery.ingest",
+        "testing.view", "testing.generate", "testing.approve", "testing.execute", "apiGovernance.view", "apiGovernance.ingest", "apiGovernance.admin", "value.view", "value.configure",
         "platform.admin"
     ];
 }
@@ -76,3 +77,9 @@ public interface IAiClient
 
 public sealed record ValueEvent(Guid Id, string TenantId, string Type, int Version,
     IReadOnlyDictionary<string, decimal> Inputs, DateTimeOffset OccurredAt);
+
+public interface IValueEventSink
+{
+    ValueTask EmitAsync(ValueEvent valueEvent, CancellationToken cancellationToken = default);
+    IReadOnlyList<ValueEvent> Read(string tenantId);
+}

@@ -1,7 +1,10 @@
 @if (bootstrap(); as data) {
   <header><img [src]="data.logo" [alt]="data.clientName + ' logo'"/><div><span>{{ data.clientName }}</span><strong>{{ data.productName }}</strong></div><button type="button" aria-label="User menu">{{ data.currentUser.displayName }}</button></header>
   <div class="layout"><nav aria-label="Primary navigation"><ul>@for (item of data.navigation; track item.route) {<li><a [href]="item.route">{{ item.label }}</a></li>}</ul></nav>
-  <main><p class="eyebrow">SMARTBOXX</p><h1>Welcome to {{ data.productName }}</h1><p>Your enabled workspace is ready.</p></main></div>
+  <main><p class="eyebrow">SMARTBOXX INTELLIGENCE</p><h1>Operational intelligence</h1><p>Review AI-assisted outputs before they become actions.</p>
+    <section class="capabilities" aria-label="Intelligence capabilities">@for (item of data.navigation; track item.route) {<article><span>Enabled capability</span><h2>{{ item.label }}</h2><a [href]="item.route">Open workspace <span aria-hidden="true">→</span></a></article>}</section>
+    @if (valueReport(); as report) {<section aria-labelledby="value-heading"><h2 id="value-heading">Value and ROI scenario</h2><p class="notice">{{ report.disclaimer }}</p><div class="metrics">@for (metric of report.metrics; track metric.name) {<article><span>{{ metric.classification }}</span><strong>{{ metric.value }} {{ metric.unit }}</strong><p>{{ metric.name }}</p></article>}</div>@for (warning of report.dataQualityWarnings; track warning) {<p role="status" class="warning">{{ warning }}</p>}</section>}
+  </main></div>
 } @else if (error()) {
   <main role="alert"><h1>We couldn't load your workspace</h1><p>Check your sign-in or contact support, then try again.</p></main>
 } @else { <main aria-busy="true"><p>Loading your workspace…</p></main> }
