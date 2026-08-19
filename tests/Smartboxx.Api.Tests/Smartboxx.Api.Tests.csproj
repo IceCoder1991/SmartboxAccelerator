@@ -11,5 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../apps/api/Smartboxx.Api/Smartboxx.Api.csproj" />
+    <ProjectReference Include="../../providers/github/Smartboxx.Providers.GitHub.csproj" />
   </ItemGroup>
 </Project>

@@ -38,6 +38,18 @@ public interface IFeatureService
     bool IsEnabled(string flag);
 }
 
+/// <summary>Resolves secrets from the deployment's secret store without exposing their values in configuration.</summary>
+public interface ISecretProvider
+{
+    ValueTask<string> GetRequiredAsync(string name, CancellationToken cancellationToken = default);
+}
+
+/// <summary>Provides the tenant selected by the authenticated request boundary.</summary>
+public interface ITenantContextAccessor
+{
+    string TenantId { get; }
+}
+
 public interface IAuditService
 {
     ValueTask WriteAsync(AuditEvent auditEvent, CancellationToken cancellationToken = default);

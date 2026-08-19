@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../../modules/software-delivery/Smartboxx.Modules.SoftwareDelivery.csproj" />
+  </ItemGroup>
+</Project>
